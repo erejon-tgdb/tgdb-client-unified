@@ -93,7 +93,7 @@ public class TransactionTests1000Attr {
 		
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/tgdb10.conf", tgWorkingDir + "/tgdb10.conf");
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);
+		tgServer.start(60000);
 	}
 	
 	/**
@@ -185,8 +185,8 @@ public class TransactionTests1000Attr {
 		
         for(int i=1;i<attrcount;i++)
 		 {
-
-		     // basic1.setAttribute("key", i);
+        	  //Sneha: Removing the comment as it is causing TGTransactionUniqueIndexKeyAttributeNullError
+        	  basic1.setAttribute("key", i);
 		      
 			  basic1.setAttribute("boolAttr"+i, data[1][1]);
 			  basic1.setAttribute("intAttr"+i,data[1][2]);

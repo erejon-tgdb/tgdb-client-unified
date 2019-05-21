@@ -64,7 +64,7 @@ public class EdgeTypeTests {
 	@BeforeSuite(description = "Init TG Admin")
 	public void initServer() throws Exception  {
 		TGServer.killAll(); // Clean up everything first
-		File initFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/../Initdb.conf", tgWorkingDir + "/InitDB.conf");
+		File initFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/../initdb.conf", tgWorkingDir + "/InitDB.conf");
 		tgServer = new TGServer(tgHome);
 		try {
 			tgServer.init(initFile.getAbsolutePath(), true, 60000);

@@ -7,10 +7,12 @@
 			<attribute name="javadoc_location" value="file:/C:/commons-exec-1.3/apidocs/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.testng.TESTNG_CONTAINER"/>
 	<classpathentry kind="var" path="JRE_LIB"/>
 	<classpathentry kind="var" path="TGDB_HOME/lib/tgdb-client.jar" sourcepath="/TGDB_SRC"/>
-	<classpathentry kind="var" path="TGDB_SRC"/>
 	<classpathentry kind="var" path="TGDB_HOME/lib/tgdb-gremlin-mincore.jar"/>
+	<classpathentry kind="lib" path="lib/testng/com.beust.jcommander_1.72.0.jar"/>
+	<classpathentry kind="lib" path="lib/testng/org.apache-extras.beanshell.bsh_2.0.0.b6.jar"/>
+	<classpathentry kind="lib" path="lib/testng/org.testng_6.14.3.r201802240500.jar"/>
+	<classpathentry kind="lib" path="lib/testng/org.yaml.snakeyaml_1.17.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
