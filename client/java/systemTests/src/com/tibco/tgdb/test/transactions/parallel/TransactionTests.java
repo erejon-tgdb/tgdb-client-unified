@@ -139,7 +139,7 @@ public class TransactionTests {
 		
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/tgdb10.conf", tgWorkingDir + "/tgdb10.conf");
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);
+		tgServer.start(60000);
 	}
 	
 	/**
@@ -162,7 +162,7 @@ public class TransactionTests {
 		
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/tgdb500.conf", tgWorkingDir + "/tgdb500.conf");
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);
+		tgServer.start(60000);
 	}
 	
 	
@@ -186,7 +186,7 @@ public class TransactionTests {
 		
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/tgdb1000.conf", tgWorkingDir + "/tgdb1000.conf");
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);
+		tgServer.start(60000);
 	}
 	
 	
