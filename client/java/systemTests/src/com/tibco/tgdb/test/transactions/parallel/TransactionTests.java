@@ -115,7 +115,7 @@ public class TransactionTests {
 		
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/tgdb100.conf", tgWorkingDir + "/tgdb100.conf");
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);
+		tgServer.start(60000);
 	}
 
 	/**
