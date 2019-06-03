@@ -330,6 +330,12 @@ public class ConnectionTests {
 					//Sneha: Keeping the portion of IPV6 address after % sign as well,as testIPv6Connet test fails on MACOSX without it.
 					//This change needs to be tested on other Platforms.
 					String tmpAddr = address.getHostAddress();
+					System.out.println(tmpAddr);
+					if (tmpAddr.contains("%")) {
+						System.out.println("<<Inside>>>");
+						tmpAddr = tmpAddr.replace("%lo", "");
+						System.out.println(">>>>" + tmpAddr);
+					}
 					urlParams.add(new Object[] {tmpAddr,port});
 				}
 			}
