@@ -92,7 +92,8 @@ public class ConnectionTests {
 		
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/IPv4.conf", tgWorkingDir + "/IPv4.conf");
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);
+		//tgServer.start(10000);
+		tgServer.start(2000000);
 	}
 	
 	@AfterGroups("ipv4Grp")
@@ -111,7 +112,8 @@ public class ConnectionTests {
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/IPv6.conf", tgWorkingDir + "/IPv6.conf");
 
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);
+		//tgServer.start(10000);
+		tgServer.start(2000000);
 	}
 	
 	@AfterGroups("ipv6Grp")
@@ -129,7 +131,8 @@ public class ConnectionTests {
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/Auth.conf", tgWorkingDir + "/Auth.conf");
 
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);
+		//tgServer.start(10000);
+		tgServer.start(2000000);
 	}
 	
 	@AfterGroups("authGrp")
@@ -154,7 +157,9 @@ public class ConnectionTests {
 	public void startMassConnectionServer() throws Exception {
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/MassConnect.conf", tgWorkingDir + "/MassConnect.conf");
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);
+		//tgServer.start(10000);
+		tgServer.start(2000000);
+
 	}
 	
 	@AfterGroups("massConnectGrp")
@@ -172,7 +177,9 @@ public class ConnectionTests {
 		
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/ConnectionPool.conf", tgWorkingDir + "/ConnectionPool.conf");
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);
+		//tgServer.start(10000);
+		tgServer.start(2000000);
+
 		
 		String url = "tcp://"+ tgServer.getNetListeners()[0].getHost() + ":" + tgServer.getNetListeners()[0].getPort() + "/{connectionReserveTimeoutSeconds=5}";
 		tgPool = TGConnectionFactory.getInstance().createConnectionPool(url, tgUser, tgPwd, 10, null);
@@ -288,7 +295,9 @@ public class ConnectionTests {
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/" + configFile, tgWorkingDir + "/" + configFile);
 		
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);	
+		//tgServer.start(10000);	
+		tgServer.start(2000000);
+
 		
 		String url = "tcp://localhost:" + tgServer.getNetListeners()[0].getPort();
 		int maxConnectionIPv4 = tgServer.getNetListeners()[0].getMaxConnections();
@@ -326,7 +335,9 @@ public class ConnectionTests {
 		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/" + configFile, tgWorkingDir + "/" + configFile);
 		
 		tgServer.setConfigFile(confFile);
-		tgServer.start(10000);	
+//		tgServer.start(10000);	
+		tgServer.start(2000000);
+
 		
 		String url = "tcp://localhost:" + tgServer.getNetListeners()[0].getPort();
 		int maxConnectionIPv4 = tgServer.getNetListeners()[0].getMaxConnections();
@@ -359,7 +370,8 @@ public class ConnectionTests {
 	 */
 	@Test(	groups = "massConnectGrp",
 			description = "Connect and disconnect 5,000 times",
-			timeOut = 500000)
+			timeOut = 2000000)
+//			timeOut = 500000)
 	public void testMassConnectWithNoPool() throws Exception {
 		
 		String url = "tcp://"+ tgServer.getNetListeners()[0].getHost() + ":" + tgServer.getNetListeners()[0].getPort();
@@ -387,7 +399,8 @@ public class ConnectionTests {
 	 */
 	@Test(	groups = "massConnectGrp",
 			description = "Get and release a connection from the pool 10,000 times",
-			timeOut = 120000)
+			timeOut = 2000000)
+//			timeOut = 120000)
 	public void testMassConnectWithPool() throws Exception {
 		TGConnection conn = null;
 		int nbConnection = 10000;
@@ -415,7 +428,8 @@ public class ConnectionTests {
 	 */
 	@Test(	groups = "massConnectGrp",
 			description = "Connect and disconnect a connection pool 5,000 times",
-			timeOut = 600000)
+			timeOut = 3000000)
+//			timeOut = 600000)
 	public void testMassConnectWithPool2() throws Exception {
 		TGConnection conn = null;
 		TGConnectionPool pool = null;
@@ -448,7 +462,8 @@ public class ConnectionTests {
 	 */
 	@Test(	groups = "massConnectGrp",
 			description = "Connect and disconnect a dedicated-channel connection pool 1,000 times",
-			timeOut = 600000)
+			timeOut = 4000000)
+//			timeOut = 600000)
 	public void testMassConnectWithPool3() throws Exception {
 		TGConnection conn = null;
 		TGConnectionPool pool = null;
@@ -484,7 +499,8 @@ public class ConnectionTests {
 			description = "Connect 20 clients to a pool of size 10. All clients should connect successfully since connectionReserveTimeoutSeconds allows sufficient time",
 			invocationCount = 20,
 			threadPoolSize = 20,
-			timeOut = 60000)
+			timeOut = 2000000)
+//			timeOut = 60000)
 	public void testConnectionPool() throws Exception {
 		
 		tgConn = tgPool.get();
@@ -504,7 +520,8 @@ public class ConnectionTests {
 			description = "Connect 20 clients to a pool of size 10. Half clients should fail to connect since connectionReserveTimeoutSeconds is short",
 			invocationCount = 20,
 			threadPoolSize = 20,
-			timeOut = 60000)
+			timeOut = 2000000)
+//			timeOut = 60000)
 	public void testConnectionPool2() throws Exception {
 		int expectedPoolTimeout = 10;
 		int expectedPoolSuccess = 10;

@@ -4,6 +4,7 @@ user0|user0|user|loginSuccess
 user.1|user.123|user|loginSuccess
 admin-1|admin-123|administrator|loginSuccess
 ops_1|ops_123|operator|loginSuccess
+#123.-_|!@#$%&*.:?|user|loginSuccess
 123.-_|!@#$%&*.:;?|user|loginSuccess
 # wrong user
 wrong-user|user.123|user|loginFailure
