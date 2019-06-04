@@ -331,11 +331,7 @@ public class ConnectionTests {
 					//This change needs to be tested on other Platforms.
 					String tmpAddr = address.getHostAddress();
 					System.out.println(tmpAddr);
-					if (tmpAddr.contains("%")) {
-						System.out.println("<<Inside>>>");
-						tmpAddr = tmpAddr.replace("%lo", "");
-						System.out.println(">>>>" + tmpAddr);
-					}
+					tmpAddr = cleanIPv6(tmpAddr);		
 					urlParams.add(new Object[] {tmpAddr,port});
 				}
 			}
@@ -351,6 +347,35 @@ public class ConnectionTests {
 	public Object[][] getUsers() throws IOException, EvalError {
 		Object[][] data =  PipedData.read(this.getClass().getResourceAsStream("/"+this.getClass().getPackage().getName().replace('.', '/') + "/WrongUsers.data"));
 		return data;
+	}
+	
+	
+	/************************
+	 * 
+	 * Cleaners 
+	 * 
+	 ************************/
+	
+	public String cleanIPv6(String ipv6) {
+		boolean control = true;
+		String newIPv6 = "";
+		System.out.println("<<<<<print before clean: " + ipv6);			
+		for(int i = 0 ; i < ipv6.length() ; i++) {
+			if (ipv6.contains("%lo")) {
+				newIPv6 = ipv6.replace("%lo", "");
+				continue;
+			}
+			if(ipv6.charAt(i)  == "%".charAt(0)) 
+				control = false;			
+			if(ipv6.charAt(i)  == ":".charAt(0) && !control) 
+				control = true;			
+			if(control)
+				newIPv6 += ipv6.charAt(i);
+		}
+		System.out.println("<<<<<print after clean: " + newIPv6);
+
+		return newIPv6;
+		
 	}
 
 }
