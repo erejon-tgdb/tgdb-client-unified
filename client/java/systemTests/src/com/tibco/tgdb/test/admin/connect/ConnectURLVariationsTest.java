@@ -8,11 +8,6 @@ import com.tibco.tgdb.test.lib.TGGeneralException;
 import com.tibco.tgdb.test.lib.TGInitException;
 import com.tibco.tgdb.test.lib.TGServer;
 import com.tibco.tgdb.test.utils.ClasspathResource;
-import com.tibco.tgdb.test.utils.PipedData;
-
-import bsh.EvalError;
-
-import org.testng.annotations.BeforeMethod;
 
 import java.io.File;
 import java.io.IOException;
