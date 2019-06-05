@@ -112,9 +112,7 @@ public class ConnectURLVariationsTest {
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
 
-		// Start admin console and connect via IPv6
-		//Sneha: Earlier call for invoke was incorrect as we need to use host and port passed to the method in order to connect
-		
+		// Start admin console and connect via IPv6		
 		
 		String console="";
 		try {
@@ -125,6 +123,29 @@ public class ConnectURLVariationsTest {
 
 		}
 
+	}
+	
+	/***
+	 * Trying to connect to TGDB-admin without port and host
+	 * @throws IOException 
+	 */
+	
+	@Test
+	public void noHostAndPortSpecifiedIPv6() throws IOException{
+		File cmdFile = ClasspathResource.getResourceAsFile(
+				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
+				tgWorkingDir + "/Connection.cmd");
+		System.out.println(cmdFile + "*************");
+		// Start admin console and try to connect via IPv6 without host and port	
+		
+		String console="";
+		try {
+			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://scott@[]", tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1, 10000);
+			Assert.fail("Expected a TGAdminException due to host and port were not sent");
+		} catch (TGAdminException e) {
+			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "Admin connect to server even when URL doesn't have the port");
+
+		}
 	}
 	
 	
@@ -199,7 +220,7 @@ public class ConnectURLVariationsTest {
 					//Sneha: Keeping the portion of IPV6 address after % sign as well,as testIPv6Connet test fails on MACOSX without it.
 					//This change needs to be tested on other Platforms.
 					String tmpAddr = address.getHostAddress();
-					System.out.println(tmpAddr);
+//					System.out.println(tmpAddr);
 					tmpAddr = cleanIPv6(tmpAddr);		
 					urlParams.add(new Object[] {tmpAddr,port});
 				}
@@ -262,7 +283,6 @@ public class ConnectURLVariationsTest {
 	public String cleanIPv6(String ipv6) {
 		boolean control = true;
 		String newIPv6 = "";
-		System.out.println("<<<<<print before clean: " + ipv6);			
 		for(int i = 0 ; i < ipv6.length() ; i++) {
 			if (ipv6.contains("%lo")) {
 				newIPv6 = ipv6.replace("%lo", "");
@@ -275,8 +295,6 @@ public class ConnectURLVariationsTest {
 			if(control)
 				newIPv6 += ipv6.charAt(i);
 		}
-		System.out.println("<<<<<print after clean: " + newIPv6);
-
 		return newIPv6;
 		
 	}
