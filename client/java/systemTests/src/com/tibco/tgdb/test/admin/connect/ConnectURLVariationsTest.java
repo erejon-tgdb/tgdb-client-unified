@@ -132,7 +132,7 @@ public class ConnectURLVariationsTest {
 	 */
 	@Test(dataProvider = "ipv4Data",
 		  description = "Trying to connect TG Admin to TG Server via IPv4 without port")
-	public void testIPv4Connect(String host) throws Exception {
+	public void testIPv4ConnectWOPort(String host) throws Exception {
 
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
@@ -153,9 +153,38 @@ public class ConnectURLVariationsTest {
 
 		//Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Admin did not connect to server");
 	}
+	
+	/**
+	 * testIPv4Connect - Trying to connect TG Admin to TG Server via IPv4 without port
+	 * 
+	 * @throws Exception
+	 */
+	@Test(dataProvider = "ipv4Data",
+		  description = "Trying to connect TG Admin to TG Server via IPv4 without port")
+	public void testIPv4ConnectWOPortHost() throws Exception {
+
+		File cmdFile = ClasspathResource.getResourceAsFile(
+				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
+				tgWorkingDir + "/Connection.cmd");
+
+		// Start admin console and connect via IPv6
+		//Sneha: Earlier call for invoke was incorrect as we need to use host and port passed to the method in order to connect
+		//String console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://" + host, tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", null, cmdFile.getAbsolutePath(), -1, 10000); 
+		String console = "";
+		try { 
+			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://scott@", tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", null, cmdFile.getAbsolutePath(), -1, 10000); 
+			Assert.fail("Expected a TGAdminException due to wrong connection variation but did not get it");
+		} 
+		catch (TGAdminException e) {
+			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://scott@ with user root");
+		}
+		//System.out.println(console);
+
+		//Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Admin did not connect to server");
+	}
 
   
-  /************************
+	/************************
 	 * 
 	 * Data Providers 
 	 * 
