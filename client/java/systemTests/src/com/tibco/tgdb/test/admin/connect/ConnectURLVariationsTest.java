@@ -108,9 +108,7 @@ public class ConnectURLVariationsTest {
 				tgWorkingDir + "/Connection.cmd");
 
 		// Start admin console and connect via IPv6
-		//Sneha: Earlier call for invoke was incorrect as we need to use host and port passed to the method in order to connect
-		
-		
+
 		String console="";
 		try {
 			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://[" + host +"]", tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1, 10000);
@@ -120,10 +118,7 @@ public class ConnectURLVariationsTest {
 
 		}
 
-	}
-	
-	
-	
+	}	
 	
 	/**
 	 * testIPv4Connect - Trying to connect TG Admin to TG Server via IPv4 without port
@@ -132,15 +127,14 @@ public class ConnectURLVariationsTest {
 	 */
 	@Test(dataProvider = "ipv4Data",
 		  description = "Trying to connect TG Admin to TG Server via IPv4 without port")
-	public void testIPv4ConnectWOPort(String host) throws Exception {
+	public void testIPv4ConnectWOPort(String host, int port) throws Exception {
 
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
-
-		// Start admin console and connect via IPv6
-		//Sneha: Earlier call for invoke was incorrect as we need to use host and port passed to the method in order to connect
-		//String console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://" + host, tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", null, cmdFile.getAbsolutePath(), -1, 10000); 
+		
+		// Start admin console and connect via IPv4
+		
 		String console = "";
 		try { 
 			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://" + host, tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", null, cmdFile.getAbsolutePath(), -1, 10000); 
@@ -149,9 +143,6 @@ public class ConnectURLVariationsTest {
 		catch (TGAdminException e) {
 			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://" + host + " with user root");
 		}
-		//System.out.println(console);
-
-		//Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Admin did not connect to server");
 	}
 	
 	/**
@@ -160,16 +151,15 @@ public class ConnectURLVariationsTest {
 	 * @throws Exception
 	 */
 	@Test(dataProvider = "ipv4Data",
-		  description = "Trying to connect TG Admin to TG Server via IPv4 without port")
-	public void testIPv4ConnectWOPortHost() throws Exception {
+		  description = "Trying to connect TG Admin to TG Server via IPv4 without port and host")
+	public void testIPv4ConnectWOPortHost(String host, int port) throws Exception {
 
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
 
-		// Start admin console and connect via IPv6
-		//Sneha: Earlier call for invoke was incorrect as we need to use host and port passed to the method in order to connect
-		//String console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://" + host, tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", null, cmdFile.getAbsolutePath(), -1, 10000); 
+		// Start admin console and connect via IPv4
+		
 		String console = "";
 		try { 
 			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://scott@", tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", null, cmdFile.getAbsolutePath(), -1, 10000); 
@@ -178,9 +168,6 @@ public class ConnectURLVariationsTest {
 		catch (TGAdminException e) {
 			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://scott@ with user root");
 		}
-		//System.out.println(console);
-
-		//Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Admin did not connect to server");
 	}
 
   
@@ -246,7 +233,7 @@ public class ConnectURLVariationsTest {
 		// since @DataProvider might run before @BeforeSuite tgServer might not exist yet
 		TGServer tgTempServer = new TGServer(tgHome);
 		tgTempServer.setConfigFile(getConfigFile());
-		//int port = tgTempServer.getNetListeners()[0].getPort(); // get port of ipv6 listener
+		int port = tgTempServer.getNetListeners()[0].getPort(); // get port of ipv6 listener
 		
 		List<Object[]> urlParams = new ArrayList<Object[]>();
 		System.setProperty("java.net.preferIPv6Addresses", "false");
@@ -264,10 +251,8 @@ public class ConnectURLVariationsTest {
 			while (addrs.hasMoreElements()) {
 				InetAddress address = addrs.nextElement();
 				if (address instanceof Inet4Address) {
-					//Sneha: Keeping the portion of IPV6 address after % sign as well,as testIPv6Connet test fails on MACOSX without it.
-					//This change needs to be tested on other Platforms.
 					String tmpAddr = address.getHostAddress();
-					urlParams.add(new Object[] {tmpAddr});
+					urlParams.add(new Object[] {tmpAddr, port});
 				}
 			}
 		}
