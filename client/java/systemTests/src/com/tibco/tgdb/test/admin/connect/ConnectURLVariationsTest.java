@@ -255,7 +255,8 @@ public class ConnectURLVariationsTest {
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
 
-
+		Object o = getIPv6();
+		// System.out.println(o.);
 
 		String console = "";
 		String url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
