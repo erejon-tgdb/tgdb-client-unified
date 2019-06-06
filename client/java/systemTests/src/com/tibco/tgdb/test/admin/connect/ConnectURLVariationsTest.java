@@ -260,7 +260,7 @@ public class ConnectURLVariationsTest {
 		
 		Enumeration<NetworkInterface> nets =  NetworkInterface.getNetworkInterfaces();
 		for (NetworkInterface nif : Collections.list(nets)) {
-			if(!nif.getDisplayName().equalsIgnoreCase("lo"))
+			if(!nif.getDisplayName().contains("lo"))
 				netInt = "%" + nif.getDisplayName();
 			
 		}
