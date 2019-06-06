@@ -251,16 +251,32 @@ public class ConnectURLVariationsTest {
 	@Test(dataProvider = "remoteServer",
 		  description = "connecting to a remote server by Ipv4 and IPv6")
 	public void connectRemoteServer(String host, String port) throws Exception {
+		String netInt = "";
+		String url;
+		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
+		
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
-
-		Object o = getIPv6();
-		// System.out.println(o.);
-
+		
+		Enumeration<NetworkInterface> nets =  NetworkInterface.getNetworkInterfaces();
+		for (NetworkInterface nif : Collections.list(nets)) {
+			if(!nif.getDisplayName().equalsIgnoreCase("lo"))
+				netInt = "%" + nif.getDisplayName();
+			
+		}
+		
 		String console = "";
-		String url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
-		System.out.println(url);
+		if(windows) {
+			 url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
+			 System.out.println(url);
+		}
+		else {
+			 url = (host.length()>11)?"tcp://[" + host + netInt + ":" + port + "]": "tcp://" + host + ":" + port ;
+			 System.out.println(url);
+		}
+
+//		System.out.println(url);
 		try {
 		console = TGAdmin.invoke(tgServer.getHome().toString(), url, tgServer.getSystemUser(),
 					tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1,
@@ -328,12 +344,12 @@ public class ConnectURLVariationsTest {
 					// This change needs to be tested on other Platforms.
 					String tmpAddr = address.getHostAddress();
 //					System.out.println(tmpAddr);
+					
 					tmpAddr = cleanIPv6(tmpAddr);
 					urlParams.add(new Object[] { tmpAddr, port });
 				}
 			}
 		}
-
 		return (Object[][]) urlParams.toArray(new Object[urlParams.size()][2]);
 	}
 
