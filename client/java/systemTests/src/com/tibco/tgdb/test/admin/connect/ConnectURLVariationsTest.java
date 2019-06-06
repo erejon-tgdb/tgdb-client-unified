@@ -269,6 +269,9 @@ public class ConnectURLVariationsTest {
 				Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Expected successful message");
 			}
 		}catch(Exception e) {
+			if((host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & port.equalsIgnoreCase("8223")) | (host.equalsIgnoreCase("172.16.1.14") & port.equalsIgnoreCase("8222"))){
+				Assert.fail("Expected successful message");
+			}
 			System.out.println("Correct, this should not connect");
 			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://" + host +"and " + port + "with user root");
 		}
