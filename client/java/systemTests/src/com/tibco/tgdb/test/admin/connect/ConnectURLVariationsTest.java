@@ -222,29 +222,28 @@ public class ConnectURLVariationsTest {
 	 * 
 	 * @throws Exception
 	 */
-	/*@Test(dataProvider = "wrongUserData",
-		  description = "Try connecting TG Admin to TG Server via IPv6 with wrong user/pwd")
-	public void testWrongUserPwd(String user, String pwd) throws Exception {
+	@Test(dataProvider = "wrongUrlData",
+		  description = "Try connecting TG Admin to TG Server via IPv4 with wrong url argument")
+	public void testWrongUserPwd(String url) throws Exception {
 
 
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
 		String console = "";
-		String url = "tcp://[" + tgServer.getNetListeners()[1].getHost() + ":" + tgServer.getNetListeners()[1].getPort() + "]";
+		//String url = "tcp://[" + tgServer.getNetListeners()[1].getHost() + ":" + tgServer.getNetListeners()[1].getPort() + "]";
 		
 		try {
-			// Start admin console and connect via IPv6 with wrong user/pwd
-			console = TGAdmin.invoke(tgHome, url, user, pwd, tgWorkingDir + "/admin.wronguserpwd.log", null,
+			// Start admin console and connect via IPv4 with wrong url argument
+			console = TGAdmin.invoke(tgHome, url, tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.wrongurl.log", null,
 				cmdFile.getAbsolutePath(), -1, 10000);
 			System.out.println(console);
-			Assert.fail("Expected a TGAdminException due to wrong user/pwd but did not get it");
+			Assert.fail("Expected a TGAdminException due to wrong url argument but did not get it");
 		}
-		catch(TGAdminException e) { // Expected since wrong user/pwd
-			// Even though we got the exception, make sure it is for the good reason
-			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "Admin connected to server even though user/pwd was wrong");
+		catch(TGAdminException e) { 
+			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "Admin did not connect to server with wrong url");
 		}
-	}*/
+	}
 	
 	
 	
