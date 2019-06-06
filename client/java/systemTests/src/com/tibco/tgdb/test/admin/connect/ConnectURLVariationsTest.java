@@ -12,8 +12,6 @@ import com.tibco.tgdb.test.utils.PipedData;
 
 import bsh.EvalError;
 
-import org.testng.annotations.BeforeMethod;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -114,7 +112,9 @@ public class ConnectURLVariationsTest {
 
 		// Start admin console and connect via IPv6
 
+
 		String console = "";
+
 		try {
 			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://[" + host + "]", tgServer.getSystemUser(),
 					tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1,
@@ -136,60 +136,66 @@ public class ConnectURLVariationsTest {
 
 	@Test(description = "Trying to connect  TG Admin w/o host and port")
 	public void noHostAndPortSpecifiedIPv6() throws IOException {
-		File cmdFile = ClasspathResource.getResourceAsFile(
-				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
-				tgWorkingDir + "/Connection.cmd");
+		File cmdFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",tgWorkingDir + "/Connection.cmd");
 		// Start admin console and try to connect via IPv6 without host and port
 
 		String console = "";
 		try {
-			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://scott@[]", tgServer.getSystemUser(),
-					tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1,
-					10000);
+			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://scott@[]", tgServer.getSystemUser(),tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1, 10000);
 			Assert.fail("Expected a TGAdminException due to host and port were not sent");
 		} catch (TGAdminException e) {
-			Assert.assertFalse(console.contains(adminConnectSuccessMsg),
-					"Admin connect to server even when URL doesn't have the port");
+			Assert.assertFalse(console.contains(adminConnectSuccessMsg),"Admin connect to server even when URL doesn't have the port");
 
 		}
-	}
-
+	}	
 
 	/**
-	 * testIPv4Connect - Trying to connect TG Admin to TG Server via IPv4 without
-	 * port
+	 * testIPv4Connect - Trying to connect TG Admin to TG Server via IPv4 withoutport
 	 * 
 	 * @throws Exception
 	 */
-	@Test(dataProvider = "ipv4Data", description = "Trying to connect TG Admin to TG Server via IPv4 without port")
-	public void testIPv4Connect(String host) throws Exception {
+	@Test(dataProvider = "ipv4Data",
+		  description = "Trying to connect TG Admin to TG Server via IPv4 without port")
+	public void testIPv4ConnectWOPort(String host, int port) throws Exception {
+
+		File cmdFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",tgWorkingDir + "/Connection.cmd");
+
+		// Start admin console and connect via IPv4
+
+		String console = "";
+		try {
+			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://" + host, tgServer.getSystemUser(),tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", null, cmdFile.getAbsolutePath(), -1,10000);
+			Assert.fail("Expected a TGAdminException due to wrong connection variation but did not get it");
+		} catch (TGAdminException e) {
+			Assert.assertFalse(console.contains(adminConnectSuccessMsg),"TGAdmin - Admin could not connect to server tcp://" + host + " with user root");
+		}
+	}
+
+	
+	/**
+	 * testIPv4Connect - Trying to connect TG Admin to TG Server via IPv4 without port and host
+	 * 
+	 * @throws Exception
+	 */
+	@Test(dataProvider = "ipv4Data",
+		  description = "Trying to connect TG Admin to TG Server via IPv4 without port and host")
+	public void testIPv4ConnectWOPortHost(String host, int port) throws Exception {
 
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
 
-		// Start admin console and connect via IPv6
-		// Sneha: Earlier call for invoke was incorrect as we need to use host and port
-		// passed to the method in order to connect
-		// String console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://" +
-		// host, tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir +
-		// "/admin.ipv4.log", null, cmdFile.getAbsolutePath(), -1, 10000);
+		// Start admin console and connect via IPv4
+		
 		String console = "";
-		try {
-			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://" + host, tgServer.getSystemUser(),
-					tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", null, cmdFile.getAbsolutePath(), -1,
-					10000);
+		try { 
+			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://scott@", tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", null, cmdFile.getAbsolutePath(), -1, 10000); 
 			Assert.fail("Expected a TGAdminException due to wrong connection variation but did not get it");
-		} catch (TGAdminException e) {
-			Assert.assertFalse(console.contains(adminConnectSuccessMsg),
-					"TGAdmin - Admin could not connect to server tcp://" + host + " with user root");
+		} 
+		catch (TGAdminException e) {
+			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://scott@ with user root");
 		}
-		// System.out.println(console);
-
-		// Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Admin did not
-		// connect to server");
 	}
-
 	
 	/***
 	 * Connection to TG Admin using properties with colon ":"
@@ -203,15 +209,42 @@ public class ConnectURLVariationsTest {
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
 		String console = "";
+
 		console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://[::1:8223]" , tgServer.getSystemUser(),
 					tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1,
 					10000);
 		
 		Assert.assertTrue(console.contains(adminConnectSuccessMsg),"TG Admin did not connect using this URL tcp://[::1:8223]");
-		
-		
 	}
 	
+	/**
+	 * testWrongUrlArgument - Try connecting TG Admin to TG Server via IPv4 with wrong url argument
+	 * 
+	 * @throws Exception
+	 */
+	/*@Test(dataProvider = "wrongUserData",
+		  description = "Try connecting TG Admin to TG Server via IPv6 with wrong user/pwd")
+	public void testWrongUserPwd(String user, String pwd) throws Exception {
+
+
+		File cmdFile = ClasspathResource.getResourceAsFile(
+				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
+				tgWorkingDir + "/Connection.cmd");
+		String console = "";
+		String url = "tcp://[" + tgServer.getNetListeners()[1].getHost() + ":" + tgServer.getNetListeners()[1].getPort() + "]";
+		
+		try {
+			// Start admin console and connect via IPv6 with wrong user/pwd
+			console = TGAdmin.invoke(tgHome, url, user, pwd, tgWorkingDir + "/admin.wronguserpwd.log", null,
+				cmdFile.getAbsolutePath(), -1, 10000);
+			System.out.println(console);
+			Assert.fail("Expected a TGAdminException due to wrong user/pwd but did not get it");
+		}
+		catch(TGAdminException e) { // Expected since wrong user/pwd
+			// Even though we got the exception, make sure it is for the good reason
+			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "Admin connected to server even though user/pwd was wrong");
+		}
+	}*/
 	
 	
 	
@@ -221,6 +254,7 @@ public class ConnectURLVariationsTest {
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
+
 
 
 		String console = "";
@@ -239,15 +273,10 @@ public class ConnectURLVariationsTest {
 			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://" + host +"and " + port + "with user root");
 		}
 
-				
-			
-			
-		
 			
 	}
 	
-	
-	
+
 	/************************
 	 * 
 	 * Data Providers
@@ -318,8 +347,7 @@ public class ConnectURLVariationsTest {
 		// yet
 		TGServer tgTempServer = new TGServer(tgHome);
 		tgTempServer.setConfigFile(getConfigFile());
-		// int port = tgTempServer.getNetListeners()[0].getPort(); // get port of ipv6
-		// listener
+		int port = tgTempServer.getNetListeners()[0].getPort(); // get port of ipv6 listener
 
 		List<Object[]> urlParams = new ArrayList<Object[]>();
 		System.setProperty("java.net.preferIPv6Addresses", "false");
@@ -341,11 +369,8 @@ public class ConnectURLVariationsTest {
 			while (addrs.hasMoreElements()) {
 				InetAddress address = addrs.nextElement();
 				if (address instanceof Inet4Address) {
-					// Sneha: Keeping the portion of IPV6 address after % sign as well,as
-					// testIPv6Connet test fails on MACOSX without it.
-					// This change needs to be tested on other Platforms.
 					String tmpAddr = address.getHostAddress();
-					urlParams.add(new Object[] { tmpAddr });
+					urlParams.add(new Object[] {tmpAddr, port});
 				}
 			}
 		}
@@ -362,6 +387,16 @@ public class ConnectURLVariationsTest {
 	@DataProvider(name = "remoteServer")
 	public Object[][] getUsers() throws IOException, EvalError {
 		Object[][] data =  PipedData.read(this.getClass().getResourceAsStream("/"+this.getClass().getPackage().getName().replace('.', '/') + "/remoteServer.data"));
+		return data;
+	}
+
+	
+	/**
+	 * Get several combinations of wrong urls for --url argument
+	 */
+	@DataProvider(name = "wrongUrlData")
+	public Object[] getUrls() throws IOException, EvalError {
+		Object[] data =  PipedData.read(this.getClass().getResourceAsStream("/"+this.getClass().getPackage().getName().replace('.', '/') + "/WrongUrls.data"));
 		return data;
 	}
 	

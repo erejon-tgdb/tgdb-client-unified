@@ -15,6 +15,5 @@
 	<classpathentry kind="lib" path="lib/testng/org.testng_6.14.3.r201802240500.jar"/>
 	<classpathentry kind="lib" path="lib/testng/org.yaml.snakeyaml_1.17.0.jar"/>
 	<classpathentry kind="var" path="TGDB_HOME"/>
-	<classpathentry kind="var" path="TGDB_SRC"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
