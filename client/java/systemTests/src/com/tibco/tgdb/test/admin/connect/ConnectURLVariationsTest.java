@@ -8,6 +8,9 @@ import com.tibco.tgdb.test.lib.TGGeneralException;
 import com.tibco.tgdb.test.lib.TGInitException;
 import com.tibco.tgdb.test.lib.TGServer;
 import com.tibco.tgdb.test.utils.ClasspathResource;
+import com.tibco.tgdb.test.utils.PipedData;
+
+import bsh.EvalError;
 
 import java.io.File;
 import java.io.IOException;
@@ -169,6 +172,53 @@ public class ConnectURLVariationsTest {
 			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://scott@ with user root");
 		}
 	}
+	
+	@Test(dataProvider = "ipv4Data",
+			  description = "Trying to connect TG Admin to TG Server via IPv4 with semicolon variation")
+	public void testIPv4ConnectSemicolonVariation(String host, int port) throws Exception {
+
+		File cmdFile = ClasspathResource.getResourceAsFile(
+				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
+				tgWorkingDir + "/Connection.cmd");
+
+		// Start admin console and connect via IPv4
+		
+		String console = "";
+		try { 
+			console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://" + host + "::::" + port, tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", null, cmdFile.getAbsolutePath(), -1, 10000); 
+			Assert.fail("Expected a TGAdminException due to wrong connection variation but did not get it");
+		} 
+		catch (TGAdminException e) {
+			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://scott@ with user root");
+		}
+	}
+	
+	/**
+	 * testWrongUrlArgument - Try connecting TG Admin to TG Server via IPv4 with wrong url argument
+	 * 
+	 * @throws Exception
+	 */
+	@Test(dataProvider = "wrongUserData",
+		  description = "Try connecting TG Admin to TG Server via IPv6 with wrong user/pwd")
+	public void testWrongUserPwd(String user, String pwd) throws Exception {
+
+		File cmdFile = ClasspathResource.getResourceAsFile(
+				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
+				tgWorkingDir + "/Connection.cmd");
+		String console = "";
+		String url = "tcp://[" + tgServer.getNetListeners()[1].getHost() + ":" + tgServer.getNetListeners()[1].getPort() + "]";
+		try {
+			// Start admin console and connect via IPv6 with wrong user/pwd
+			console = TGAdmin.invoke(tgHome, url, user, pwd, tgWorkingDir + "/admin.wronguserpwd.log", null,
+				cmdFile.getAbsolutePath(), -1, 10000);
+			System.out.println(console);
+			Assert.fail("Expected a TGAdminException due to wrong user/pwd but did not get it");
+		}
+		catch(TGAdminException e) { // Expected since wrong user/pwd
+			// Even though we got the exception, make sure it is for the good reason
+			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "Admin connected to server even though user/pwd was wrong");
+		}
+	}
 
   
 	/************************
@@ -259,7 +309,15 @@ public class ConnectURLVariationsTest {
 	
 		return (Object[][])urlParams.toArray(new Object[urlParams.size()][2]);
 	}
-
+	
+	/**
+	 * Get several combinations of wrong urls for --url argument
+	 */
+	@DataProvider(name = "wrongUrlData")
+	public Object[] getUrls() throws IOException, EvalError {
+		Object[] data =  PipedData.read(this.getClass().getResourceAsStream("/"+this.getClass().getPackage().getName().replace('.', '/') + "/WrongUrls.data"));
+		return data;
+	}
 	
 	
 	/************************

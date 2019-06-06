@@ -1,0 +1,10 @@
+# fyi incorrect url argument
+# without port after colon
+tcp://172.16.1.14:
+# with two or more colons between colon and port
+tcp://172.16.1.14::8222
+tcp://172.16.1.14::::::8222
+# with chars and letters between colon and port
+tcp://172.16.1.14:_*test8222
+# with chars and letters after port
+tcp://172.16.1.14:8222_*test
