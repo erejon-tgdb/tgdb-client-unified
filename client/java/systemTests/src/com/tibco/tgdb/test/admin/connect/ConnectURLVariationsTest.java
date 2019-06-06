@@ -222,21 +222,22 @@ public class ConnectURLVariationsTest {
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
 
-		// Start admin console and connect via IPv6
 
 		String console = "";
 		String url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
 		System.out.println(url);
-			console = TGAdmin.invoke(tgServer.getHome().toString(), url, tgServer.getSystemUser(),
+		try {
+		console = TGAdmin.invoke(tgServer.getHome().toString(), url, tgServer.getSystemUser(),
 					tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1,
 					150000);
 			
 			if((!host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & !port.equalsIgnoreCase("8223")) | (!host.equalsIgnoreCase("172.16.1.14") & !port.equalsIgnoreCase("8222"))){
 				Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Expected successful message");
-			}else {
-				Assert.assertFalse(console.contains(adminConnectSuccessMsg), "Correct this should not pass");
-
 			}
+		}catch(Exception e) {
+			System.out.println("Correct, this should not connect");
+			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://" + host +"and " + port + "with user root");
+		}
 
 				
 			
