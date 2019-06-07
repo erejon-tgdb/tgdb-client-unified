@@ -11,3 +11,7 @@ fe80::1c5e:d7a2:daad:62c5|8223
 fe80::797e:c056:c735:5359|8222
 ##Ipv4 - IPv6 default port -  this one should not connect
 172.16.1.14|8223
+#Ipv4 - IPv6 default port -  this one should not connect On Mac
+172.16.3.72|8223
+#IPv6 - IPv4 default port -  this one should not connect
+fe80::1c5e:d7a2:daad:62c5|8222
