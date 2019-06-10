@@ -223,7 +223,8 @@ public class ConnectURLVariationsTest {
 	 * @throws Exception
 	 */
 	@Test(dataProvider = "wrongUrlData",
-		  description = "Try connecting TG Admin to TG Server via IPv4 with wrong url argument")
+		  description = "Try connecting TG Admin to TG Server via IPv4 with wrong url argument",
+		  enabled=false)
 	public void testWrongUserPwd(String url) throws Exception {
 
 
@@ -250,9 +251,9 @@ public class ConnectURLVariationsTest {
 	@Test(dataProvider = "remoteServer",
 		  description = "connecting to a remote server by Ipv4 and IPv6")
 	public void connectRemoteServer(String host, String port) throws Exception {
-		String netInt = "";
-		String url;
-		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
+		String netInt = "";//store the network interface
+		String url; //store the url
+		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false; //Detecting if operating system is windows.
 		
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
@@ -266,6 +267,7 @@ public class ConnectURLVariationsTest {
 		}
 		
 		String console = "";
+		// Creating the URL to connect to server, this depends from the operating system.
 		if(windows) {
 			 url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
 			 System.out.println(url);
@@ -280,7 +282,7 @@ public class ConnectURLVariationsTest {
 		console = TGAdmin.invoke(tgServer.getHome().toString(), url, tgServer.getSystemUser(),
 					tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1,
 					150000);
-			
+		
 			if((!host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & !port.equalsIgnoreCase("8223")) | (!host.equalsIgnoreCase("172.16.1.14") & !port.equalsIgnoreCase("8222"))){
 				Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Expected successful message");
 			}
@@ -288,7 +290,7 @@ public class ConnectURLVariationsTest {
 			if((host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & port.equalsIgnoreCase("8223")) | (host.equalsIgnoreCase("172.16.1.14") & port.equalsIgnoreCase("8222"))){
 				Assert.fail("Expected successful message");
 			}
-			System.out.println("Correct, this should not connect");
+			System.out.println("Correct, this should not connect: -> " + url);
 			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://" + host +"and " + port + "with user root");
 		}
 

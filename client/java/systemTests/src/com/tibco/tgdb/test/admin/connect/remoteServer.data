@@ -1,5 +1,5 @@
 [url|port]
-#Ipv4 - IPv4 default port - On Windows
+#Ipv4 - IPv4 default port - on Windows
 172.16.1.14|8222
 #IPv6 - IPv6 default port on Windows
 fe80::797e:c056:c735:5359|8223
@@ -7,11 +7,19 @@ fe80::797e:c056:c735:5359|8223
 172.16.3.72|8222
 #IPv6 - IPv6 default port on Mac
 fe80::1c5e:d7a2:daad:62c5|8223
-#IPv6 - IPv4 port -  this one should not connect
+#Ipv4 - IPv4 default port - On Linux
+172.16.3.42|8222
+#IPv6 - IPv6 default port on Linux
+fe80::47c:487:3811:9814|8223
+#IPv6 - IPv4 port -  this one should not connect on Windows
 fe80::797e:c056:c735:5359|8222
-##Ipv4 - IPv6 default port -  this one should not connect
+##Ipv4 - IPv6 default port -  this one should not connect on Windows
 172.16.1.14|8223
 #Ipv4 - IPv6 default port -  this one should not connect On Mac
 172.16.3.72|8223
-#IPv6 - IPv4 default port -  this one should not connect
+#IPv6 - IPv4 default port -  this one should not connect on Mac
 fe80::1c5e:d7a2:daad:62c5|8222
+#Ipv4 - IPv4 default port - On Linux this one can connect
+172.16.3.42|8223
+#IPv6 - IPv6 default port - on Linux this one should not connect
+fe80::47c:487:3811:9814|8222
