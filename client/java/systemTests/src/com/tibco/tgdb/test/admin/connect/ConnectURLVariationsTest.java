@@ -319,7 +319,7 @@ public class ConnectURLVariationsTest {
 	 * @param port
 	 * @throws Exception
 	 */
-	@Test(dataProvider = "remoteServer",
+	@Test(dataProvider = "remoteServers",
 		  groups = "default",
 		  description = "connecting to a remote server by Ipv4 and IPv6")
 	public void connectRemoteServer(String host, String port,String connect) throws Exception {
@@ -547,51 +547,6 @@ public class ConnectURLVariationsTest {
 		return (Object[][]) urlParams.toArray(new Object[urlParams.size()][2]);
 	}
 	
-	/**
-	 * Get all IPv6 addresses available on the current machine
-	 * @throws UnknownHostException 
-	 * @throws SocketException 
-	 */
-	@DataProvider(name = "ipv6Data_")
-	public Object[][] getIPv6_() throws UnknownHostException, SocketException {
-		int port = 8223; // get port of ipv6 listener
-		
-		List<Object[]> urlParams = new ArrayList<Object[]>();
-		System.setProperty("java.net.preferIPv6Addresses", "true");
-		
-		Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-		
-		for (NetworkInterface nif : Collections.list(nets)) {
-			if (nif == null) continue;
-			if (!nif.isUp()) continue;
-			if (nif.isPointToPoint()) continue;
-			if (nif.getName().startsWith("awdl")) continue;
-			
-			Enumeration<InetAddress> addrs = nif.getInetAddresses();
-			
-			while (addrs.hasMoreElements()) {
-				InetAddress address = addrs.nextElement(); 
-				if (address instanceof Inet6Address) {
-					//Sneha: Keeping the portion of IPV6 address after % sign as well,as testIPv6Connet test fails on MACOSX without it.
-					//This change needs to be tested on other Platforms.
-					String tmpAddr = address.getHostAddress();
-					urlParams.add(new Object[] {tmpAddr,port});
-				}
-			}
-		}
-		
-		return (Object[][])urlParams.toArray(new Object[urlParams.size()][2]);
-	}
-	
-	/**
-	 * Get several combinations of remote addresses
-	 */
-	@DataProvider(name = "remoteServer")
-	public Object[][] getUsers() throws IOException, EvalError {
-		Object[][] data =  PipedData.read(this.getClass().getResourceAsStream("/"+this.getClass().getPackage().getName().replace('.', '/') + "/remoteServer.data"));
-		return data;
-	}
-
 	
 	/**
 	 * Get several combinations of wrong urls for --url argument
