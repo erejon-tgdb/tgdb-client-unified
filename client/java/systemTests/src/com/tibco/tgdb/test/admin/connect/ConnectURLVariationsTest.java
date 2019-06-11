@@ -322,11 +322,11 @@ public class ConnectURLVariationsTest {
 	@Test(dataProvider = "remoteServer",
 		  groups = "default",
 		  description = "connecting to a remote server by Ipv4 and IPv6")
-	public void connectRemoteServer(String host, String port) throws Exception {
+	public void connectRemoteServer(String host, String port,String connect) throws Exception {
 		String netInt = "";//store the network interface
 		String url; //store the url
+		boolean expectedPass = (connect.equalsIgnoreCase("true"))?true:false;
 		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false; //Detecting if operating system is windows.
-		
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
@@ -334,19 +334,16 @@ public class ConnectURLVariationsTest {
 		Enumeration<NetworkInterface> nets =  NetworkInterface.getNetworkInterfaces();
 		for (NetworkInterface nif : Collections.list(nets)) {
 			if(!nif.getDisplayName().contains("lo"))
-				netInt = "%" + nif.getDisplayName();
-			
+				netInt = "%" + nif.getDisplayName();	
 		}
 		
 		String console = "";
 		// Creating the URL to connect to server, this depends from the operating system.
 		if(windows) {
 			 url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
-			 System.out.println(url);
 		}
 		else {
 			 url = (host.length()>11)?"tcp://[" + host + netInt + ":" + port + "]": "tcp://" + host + ":" + port ;
-			 System.out.println(url);
 		}
 
 //		System.out.println(url);
@@ -355,12 +352,19 @@ public class ConnectURLVariationsTest {
 					tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1,
 					150000);
 		
-			if((!host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & !port.equalsIgnoreCase("8223")) | (!host.equalsIgnoreCase("172.16.1.14") & !port.equalsIgnoreCase("8222"))){
-				Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Expected successful message");
-			}
+//			if((!host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & !port.equalsIgnoreCase("8223")) | (!host.equalsIgnoreCase("172.16.1.14") & !port.equalsIgnoreCase("8222"))){
+//				Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Expected successful message");
+//			}
+		if(expectedPass==false) {
+			Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Expected failure message");
+		}
+		
 		}catch(Exception e) {
-			if((host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & port.equalsIgnoreCase("8223")) | (host.equalsIgnoreCase("172.16.1.14") & port.equalsIgnoreCase("8222"))){
-				Assert.fail("Expected successful message");
+//			if((host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & port.equalsIgnoreCase("8223")) | (host.equalsIgnoreCase("172.16.1.14") & port.equalsIgnoreCase("8222"))){
+//				Assert.fail("Expected successful message");
+//			}
+			if(expectedPass==true) {
+				Assert.fail("Expected successful message -> " + url);
 			}
 			System.out.println("Correct, this should not connect: -> " + url);
 			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://" + host +"and " + port + "with user root");
@@ -596,6 +600,37 @@ public class ConnectURLVariationsTest {
 	public Object[] getUrls() throws IOException, EvalError {
 		Object[] data =  PipedData.read(this.getClass().getResourceAsStream("/"+this.getClass().getPackage().getName().replace('.', '/') + "/WrongUrls.data"));
 		return data;
+	}
+	
+	@DataProvider(name = "remoteServers")
+	public Object[][] getRemoteServer(){
+		return new Object[][] {
+			//Ipv4 - IPv4 default port - on Windows
+			{"172.16.1.14","8222","true"},
+			//IPv6 - IPv6 default port on Windows
+			{"fe80::797e:c056:c735:5359","8223","true"},
+			//Ipv4 - IPv4 default port - On Mac
+			{"172.16.3.72","8222","true"},
+			//IPv6 - IPv6 default port on Mac
+			{"fe80::1c5e:d7a2:daad:62c5","8223","true"},
+			//Ipv4 - IPv4 default port - On Linux
+			{"172.16.3.42","8222","true"},
+			//IPv6 - IPv6 default port on Linux
+			{"fe80::47c:487:3811:9814","8223","true"},
+			//IPv6 - IPv4 port -  this one should not connect on Windows
+			{"fe80::797e:c056:c735:5359","8222","false"},
+			////Ipv4 - IPv6 default port -  this one should not connect on Windows
+			{"172.16.1.14","8223","false"},
+			//Ipv4 - IPv6 default port -  this one should not connect On Mac
+			{"172.16.3.72","8223","false"},
+			//IPv6 - IPv4 default port -  this one should not connect on Mac
+			{"fe80::1c5e:d7a2:daad:62c5","8222","false"},
+			//Ipv4 - IPv4 default port - On Linux this one can connect
+			{"172.16.3.42","8223","true"},
+			//IPv6 - IPv6 default port - on Linux this one should not connect
+			{"fe80::47c:487:3811:9814","8222","false"}
+		};
+			
 	}
 	
 
