@@ -18,6 +18,8 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -28,7 +30,10 @@ import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.AfterGroups;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeGroups;
+
 
 /**
  * Copyright 2018 TIBCO Software Inc. All rights reserved.
@@ -62,33 +67,70 @@ public class ConnectURLVariationsTest {
 	@BeforeSuite(description = "Init TG Admin")
 	public void initServer() throws Exception {
 		TGServer.killAll(); // Clean up everything first
-		File initFile = ClasspathResource.getResourceAsFile(
-				this.getClass().getPackage().getName().replaceFirst("\\.[a-z]*$", "").replace('.', '/')
-						+ "/initdb.conf",
-				tgWorkingDir + "/initdb.conf");
+		File initFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replaceFirst("\\.[a-z]*$", "").replace('.', '/')
+						+ "/initdb.conf", tgWorkingDir + "/initdb.conf");
 		tgServer = new TGServer(tgHome);
 		try {
 			tgServer.init(initFile.getAbsolutePath(), true, 60000);
+			System.out.println(tgServer.getBanner());
 		} catch (TGInitException ie) {
 			System.out.println(ie.getOutput());
 			throw ie;
 		}
-		System.out.println(tgServer.getBanner());
-		tgServer.setConfigFile(getConfigFile());
-		tgServer.start(15000);
+		/*tgServer.setConfigFile(getConfigFile());
+		tgServer.start(15000);*/
 	}
-
+	
 	/**
-	 * Kill TG server after suite
+	 * Start TG Sever before 
 	 * 
 	 * @throws Exception
 	 */
-	@AfterSuite
-	public void killServer() throws Exception {
+	@BeforeGroups("default")
+	public void startServer() throws Exception {
+		tgServer.setConfigFile(getConfigFile());
+		//tgServer.start(10000);
+		tgServer.start(15000);
+	}
+	
+	/**
+	 * Stop TG Server
+	 * 
+	 * @throws Exception
+	 */
+	@AfterGroups("default")
+	public void stopServer() throws Exception {
 		tgServer.kill();
 		// Backup log file before moving to next test
 		File logFile = tgServer.getLogFile();
 		File backLogFile = new File(logFile + ".adminconnection");
+		Files.copy(logFile.toPath(), backLogFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	}
+	
+	/**
+	 * Start TG Server before port changed test
+	 * 
+	 * @throws Exception
+	 */
+	@BeforeGroups("otherPorts")
+	public void startServerWithOtherPorts() throws Exception {
+		File confFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/diffPorts.conf", tgWorkingDir + "/diffPorts.conf");
+		tgServer.setConfigFile(confFile);
+		//tgServer.start(10000);
+		tgServer.start(15000);
+	}
+	
+	/**
+	 * Stop TG Server before port changed test
+	 * 
+	 * @throws Exception
+	 */
+	@AfterGroups("otherPorts")
+	public void stopServerWithOtherPorts() throws Exception {
+		tgServer.kill();
+		// Backup log file before moving to next test
+		File logFile = tgServer.getLogFile();
+		File backLogFile = new File(logFile + ".diffports");
 		Files.copy(logFile.toPath(), backLogFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 
@@ -101,9 +143,13 @@ public class ConnectURLVariationsTest {
 	/**
 	 * testIPv6Connect - Connect TG Admin to TG Server via IPv6
 	 * 
+	 * @param host
+	 * @param port 
 	 * @throws Exception
 	 */
-	@Test(dataProvider = "ipv6Data", description = "Connect TG Admin to TG Server via IPv6")
+	@Test(dataProvider = "ipv6Data", 
+		  groups = "default",
+		  description = "Connect TG Admin to TG Server via IPv6")
 	public void testIPv6ConnectWOPort(String host, int port) throws Exception {
 
 		File cmdFile = ClasspathResource.getResourceAsFile(
@@ -128,13 +174,12 @@ public class ConnectURLVariationsTest {
 
 	}
 
-	/***
+	/**
 	 * Trying to connect to TGDB-admin without port and host
 	 * 
 	 * @throws IOException
 	 */
-
-	@Test(description = "Trying to connect  TG Admin w/o host and port")
+	@Test(groups = "default", description = "Trying to connect  TG Admin w/o host and port")
 	public void noHostAndPortSpecifiedIPv6() throws IOException {
 		File cmdFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",tgWorkingDir + "/Connection.cmd");
 		// Start admin console and try to connect via IPv6 without host and port
@@ -150,11 +195,14 @@ public class ConnectURLVariationsTest {
 	}	
 
 	/**
-	 * testIPv4Connect - Trying to connect TG Admin to TG Server via IPv4 withoutport
+	 * testIPv4Connect - Trying to connect TG Admin to TG Server via IPv4 without port
 	 * 
+	 * @param host
+	 * @param port
 	 * @throws Exception
 	 */
 	@Test(dataProvider = "ipv4Data",
+		  groups = "default",
 		  description = "Trying to connect TG Admin to TG Server via IPv4 without port")
 	public void testIPv4ConnectWOPort(String host, int port) throws Exception {
 
@@ -175,9 +223,12 @@ public class ConnectURLVariationsTest {
 	/**
 	 * testIPv4Connect - Trying to connect TG Admin to TG Server via IPv4 without port and host
 	 * 
+	 * @param host
+	 * @param port
 	 * @throws Exception
 	 */
 	@Test(dataProvider = "ipv4Data",
+		  groups = "default",
 		  description = "Trying to connect TG Admin to TG Server via IPv4 without port and host")
 	public void testIPv4ConnectWOPortHost(String host, int port) throws Exception {
 
@@ -199,11 +250,11 @@ public class ConnectURLVariationsTest {
 	
 	/***
 	 * Connection to TG Admin using properties with colon ":"
+	 * 
 	 * @throws Exception 
-	 *
 	 */
 	
-	@Test(description = "Trying to connect using an URL with : in the properties")
+	@Test(groups = "default", description = "Trying to connect using an URL with : in the properties")
 	public void connectPropsWithColon() throws Exception {
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
@@ -220,23 +271,36 @@ public class ConnectURLVariationsTest {
 	/**
 	 * testWrongUrlArgument - Try connecting TG Admin to TG Server via IPv4 with wrong url argument
 	 * 
+	 * @param url
 	 * @throws Exception
 	 */
 	@Test(dataProvider = "wrongUrlData",
-		  description = "Try connecting TG Admin to TG Server via IPv4 with wrong url argument",
-		  enabled=false)
+		  groups = "default",
+		  description = "Try connecting TG Admin to TG Server via IPv4 with wrong url argument")
 	public void testWrongUserPwd(String url) throws Exception {
 
 
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
+		String netInt = "";
+		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
+		
+		Enumeration<NetworkInterface> nets =  NetworkInterface.getNetworkInterfaces();
+		for (NetworkInterface nif : Collections.list(nets)) {
+			if(!nif.getDisplayName().contains("lo"))
+				netInt = "%" + nif.getDisplayName();
+			
+		}
+		if(!windows && url.contains("fe80")) {
+			 url = url.replace(":8223", netInt + ":8223");
+		}
+		
 		String console = "";
-		//String url = "tcp://[" + tgServer.getNetListeners()[1].getHost() + ":" + tgServer.getNetListeners()[1].getPort() + "]";
 		
 		try {
 			// Start admin console and connect via IPv4 with wrong url argument
-			console = TGAdmin.invoke(tgHome, url, tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.wrongurl.log", null,
+			console = TGAdmin.invoke(tgServer.getHome().toString(), url, tgServer.getSystemUser(), tgServer.getSystemPwd(), tgWorkingDir + "/admin.wrongurl.log", null,
 				cmdFile.getAbsolutePath(), -1, 10000);
 			System.out.println(console);
 			Assert.fail("Expected a TGAdminException due to wrong url argument but did not get it");
@@ -248,7 +312,15 @@ public class ConnectURLVariationsTest {
 	
 	
 	
+	/**
+	 * Trying to connect TG Admin to TG Server via remote
+	 * 
+	 * @param host
+	 * @param port
+	 * @throws Exception
+	 */
 	@Test(dataProvider = "remoteServer",
+		  groups = "default",
 		  description = "connecting to a remote server by Ipv4 and IPv6")
 	public void connectRemoteServer(String host, String port) throws Exception {
 		String netInt = "";//store the network interface
@@ -297,6 +369,84 @@ public class ConnectURLVariationsTest {
 			
 	}
 	
+	/**
+	 * testIPv4Connect - Trying to connect TG Admin to TG Server via IPv4 with port 8224
+	 * 
+	 * @param host
+	 * @param port
+	 * @throws Exception
+	 */
+	@Test(dataProvider = "ipv4Data",
+		  groups = "otherPorts",
+		  priority = 1,
+		  description = "Trying to connect TG Admin to TG Server via IPv4 with port 8224")
+	public void testIPv4ConnectWithDiffPort(String host, int port) throws Exception {
+
+		File cmdFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",tgWorkingDir + "/Connection.cmd");
+		
+		// Start admin console and connect via IPv4
+
+		String console = "";
+		port = 8224;
+		
+		console = TGAdmin.invoke(tgServer.getHome().toString(), "tcp://" + host + ":" + port, tgServer.getSystemUser(),tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", 
+				null, cmdFile.getAbsolutePath(), -1,10000);
+		
+		Assert.assertTrue(console.contains(adminConnectSuccessMsg),"TG Admin connect!");
+
+	}
+	
+	/**
+	 * testIPv4Connect - Trying to connect TG Admin to TG Server via IPv4 with port 8224
+	 * 
+	 * @param host
+	 * @param port
+	 * @throws Exception
+	 */
+	@Test(dataProvider = "ipv6Data",
+		  groups = "otherPorts",
+		  priority = 2,
+		  description = "Trying to connect TG Admin to TG Server via IPv6 with port 8225")
+	public void testIPv6ConnectWithDiffPort(String host, int port) throws Exception {
+
+		File cmdFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",tgWorkingDir + "/Connection.cmd");
+		String netInt = "";
+		String url;
+		port = 8225;
+		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
+		
+		Enumeration<NetworkInterface> nets =  NetworkInterface.getNetworkInterfaces();
+		for (NetworkInterface nif : Collections.list(nets)) {
+			if(!nif.getDisplayName().contains("lo"))
+				netInt = "%" + nif.getDisplayName();
+			
+		}
+		
+		if(windows) {
+			 url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
+			 System.out.println(url);
+		}
+		else {
+			if(host.contains("0:0:0:0:0:0:0")){
+				url = (host.length()>11)?"tcp://[" + host.replace(":10", ":1%lo0") + ":" + port + "]": "tcp://" + host + ":" + port ;
+			} 
+			else {
+				url = (host.length()>11)?"tcp://[" + host + netInt + ":" + port + "]": "tcp://" + host + ":" + port ;
+			}
+			 System.out.println(url);
+		}
+		
+		// Start admin console and connect via IPv6
+
+		String console = "";
+		
+		console = TGAdmin.invoke(tgServer.getHome().toString(),url, tgServer.getSystemUser(),tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", 
+				null, cmdFile.getAbsolutePath(), -1,10000);
+		
+		Assert.assertTrue(console.contains(adminConnectSuccessMsg),"TG Admin connect!");
+
+	}
+	
 
 	/************************
 	 * 
@@ -340,9 +490,6 @@ public class ConnectURLVariationsTest {
 			while (addrs.hasMoreElements()) {
 				InetAddress address = addrs.nextElement();
 				if (address instanceof Inet6Address) {
-					// Sneha: Keeping the portion of IPV6 address after % sign as well,as
-					// testIPv6Connet test fails on MACOSX without it.
-					// This change needs to be tested on other Platforms.
 					String tmpAddr = address.getHostAddress();
 //					System.out.println(tmpAddr);
 					
@@ -363,12 +510,9 @@ public class ConnectURLVariationsTest {
 	@DataProvider(name = "ipv4Data")
 	public Object[][] getIPv4() throws TGGeneralException, IOException {
 
-		// We need to get a new server here to get the port
-		// since @DataProvider might run before @BeforeSuite tgServer might not exist
-		// yet
 		TGServer tgTempServer = new TGServer(tgHome);
 		tgTempServer.setConfigFile(getConfigFile());
-		int port = tgTempServer.getNetListeners()[0].getPort(); // get port of ipv6 listener
+		int port = tgTempServer.getNetListeners()[0].getPort(); // get port of ipv4 listener
 
 		List<Object[]> urlParams = new ArrayList<Object[]>();
 		System.setProperty("java.net.preferIPv6Addresses", "false");
@@ -399,8 +543,41 @@ public class ConnectURLVariationsTest {
 		return (Object[][]) urlParams.toArray(new Object[urlParams.size()][2]);
 	}
 	
-	
-	
+	/**
+	 * Get all IPv6 addresses available on the current machine
+	 * @throws UnknownHostException 
+	 * @throws SocketException 
+	 */
+	@DataProvider(name = "ipv6Data_")
+	public Object[][] getIPv6_() throws UnknownHostException, SocketException {
+		int port = 8223; // get port of ipv6 listener
+		
+		List<Object[]> urlParams = new ArrayList<Object[]>();
+		System.setProperty("java.net.preferIPv6Addresses", "true");
+		
+		Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+		
+		for (NetworkInterface nif : Collections.list(nets)) {
+			if (nif == null) continue;
+			if (!nif.isUp()) continue;
+			if (nif.isPointToPoint()) continue;
+			if (nif.getName().startsWith("awdl")) continue;
+			
+			Enumeration<InetAddress> addrs = nif.getInetAddresses();
+			
+			while (addrs.hasMoreElements()) {
+				InetAddress address = addrs.nextElement(); 
+				if (address instanceof Inet6Address) {
+					//Sneha: Keeping the portion of IPV6 address after % sign as well,as testIPv6Connet test fails on MACOSX without it.
+					//This change needs to be tested on other Platforms.
+					String tmpAddr = address.getHostAddress();
+					urlParams.add(new Object[] {tmpAddr,port});
+				}
+			}
+		}
+		
+		return (Object[][])urlParams.toArray(new Object[urlParams.size()][2]);
+	}
 	
 	/**
 	 * Get several combinations of remote addresses
@@ -421,17 +598,6 @@ public class ConnectURLVariationsTest {
 		return data;
 	}
 	
-	
-//	
-//	
-//	/**
-//	 * Get several combinations of wrong user and pwd 
-//	 */
-//	@DataProvider(name = "x")
-//	public Object[][] getUsers() throws IOException, EvalError {
-//		Object[][] data =  PipedData.read(this.getClass().getResourceAsStream("/"+this.getClass().getPackage().getName().replace('.', '/') + "/WrongUsers.data"));
-//		return data;
-//	}
 
 	/************************
 	 * 
