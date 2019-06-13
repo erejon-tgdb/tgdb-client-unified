@@ -331,7 +331,8 @@ public class ConnectionTests {
 					//This change needs to be tested on other Platforms.
 					String tmpAddr = address.getHostAddress();
 					System.out.println(tmpAddr);
-					tmpAddr = cleanIPv6(tmpAddr);		
+					if(System.getProperty("os.name").contains("Windows") | tmpAddr.contains("%lo"))
+						tmpAddr = cleanIPv6(tmpAddr);		
 					urlParams.add(new Object[] {tmpAddr,port});
 				}
 			}
