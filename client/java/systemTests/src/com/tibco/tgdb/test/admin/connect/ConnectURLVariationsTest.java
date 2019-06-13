@@ -56,7 +56,7 @@ public class ConnectURLVariationsTest {
 	private static TGServer tgServer;
 	private static String tgHome = System.getProperty("TGDB_HOME");
 	private static String tgWorkingDir = System.getProperty("TGDB_WORKING", tgHome + "/test");
-	private static boolean windows = (System.getProperty("os.name").contains("Windows"))?true:false;
+	private static final boolean WINDOWS = (System.getProperty("os.name").contains("Windows"))?true:false;
 
 	final private String adminConnectSuccessMsg = "Successfully connected to server";
 
@@ -285,7 +285,7 @@ public class ConnectURLVariationsTest {
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
 		String netInt = "";
-		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
+//		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
 		
 		Enumeration<NetworkInterface> nets =  NetworkInterface.getNetworkInterfaces();
 		for (NetworkInterface nif : Collections.list(nets)) {
@@ -293,7 +293,7 @@ public class ConnectURLVariationsTest {
 				netInt = "%" + nif.getDisplayName();
 			
 		}
-		if(!windows && url.contains("fe80")) {
+		if(!WINDOWS && url.contains("fe80")) {
 			 url = url.replace(":8223", netInt + ":8223");
 		}
 		
@@ -340,7 +340,7 @@ public class ConnectURLVariationsTest {
 		
 		String console = "";
 		// Creating the URL to connect to server, this depends from the operating system.
-		if(windows) {
+		if(WINDOWS) {
 			 url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
 		}
 		else {
@@ -427,7 +427,7 @@ public class ConnectURLVariationsTest {
 			
 		}
 		
-		if(windows) {
+		if(WINDOWS) {
 			 url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
 			 System.out.println(url);
 		}
@@ -600,11 +600,7 @@ public class ConnectURLVariationsTest {
 		boolean control = true;
 		String newIPv6 = "";
 		for (int i = 0; i < ipv6.length(); i++) {
-			if (ipv6.contains("%lo")) {
-				newIPv6 = ipv6.replace("%lo", "");
-				continue;
-			}
-			if (ipv6.charAt(i) == "%".charAt(0) & windows | ipv6.charAt(i) == "%".charAt(0) & windows)
+			if (ipv6.charAt(i) == "%".charAt(0) & WINDOWS | ipv6.charAt(i) == "%".charAt(0) & WINDOWS)
 				control = false;
 			if (ipv6.charAt(i) == ":".charAt(0) && !control)
 				control = true;
