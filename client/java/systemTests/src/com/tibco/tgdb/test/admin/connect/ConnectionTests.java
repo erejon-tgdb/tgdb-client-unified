@@ -361,11 +361,8 @@ public class ConnectionTests {
 		String newIPv6 = "";
 		System.out.println("<<<<<print before clean: " + ipv6);			
 		for(int i = 0 ; i < ipv6.length() ; i++) {
-			if (ipv6.contains("%lo")) {
-				newIPv6 = ipv6.replace("%lo", "");
-				continue;
-			}
-			if(ipv6.charAt(i)  == "%".charAt(0)) 
+
+			if(ipv6.charAt(i)  == "%".charAt(0)& System.getProperty("os.name").contains("Windows") | ipv6.charAt(i)  == "%".charAt(0) & ipv6.contains("%lo")) 
 				control = false;			
 			if(ipv6.charAt(i)  == ":".charAt(0) && !control) 
 				control = true;			

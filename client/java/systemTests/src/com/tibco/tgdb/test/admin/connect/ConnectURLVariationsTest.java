@@ -603,7 +603,7 @@ public class ConnectURLVariationsTest {
 				newIPv6 = ipv6.replace("%lo", "");
 				continue;
 			}
-			if (ipv6.charAt(i) == "%".charAt(0))
+			if (ipv6.charAt(i) == "%".charAt(0) & System.getProperty("os.name").contains("Windows"))
 				control = false;
 			if (ipv6.charAt(i) == ":".charAt(0) && !control)
 				control = true;
