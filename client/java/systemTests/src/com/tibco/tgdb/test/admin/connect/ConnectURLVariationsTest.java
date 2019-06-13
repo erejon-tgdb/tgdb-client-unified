@@ -56,6 +56,7 @@ public class ConnectURLVariationsTest {
 	private static TGServer tgServer;
 	private static String tgHome = System.getProperty("TGDB_HOME");
 	private static String tgWorkingDir = System.getProperty("TGDB_WORKING", tgHome + "/test");
+	private static boolean windows = (System.getProperty("os.name").contains("Windows"))?true:false;
 
 	final private String adminConnectSuccessMsg = "Successfully connected to server";
 
@@ -326,7 +327,7 @@ public class ConnectURLVariationsTest {
 		String netInt = "";//store the network interface
 		String url; //store the url
 		boolean expectedPass = (connect.equalsIgnoreCase("true"))?true:false;
-		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false; //Detecting if operating system is windows.
+//		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false; //Detecting if operating system is windows.
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
@@ -417,7 +418,7 @@ public class ConnectURLVariationsTest {
 		String netInt = "";
 		String url;
 		port = 8225;
-		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
+//		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
 		
 		Enumeration<NetworkInterface> nets =  NetworkInterface.getNetworkInterfaces();
 		for (NetworkInterface nif : Collections.list(nets)) {
@@ -603,7 +604,7 @@ public class ConnectURLVariationsTest {
 				newIPv6 = ipv6.replace("%lo", "");
 				continue;
 			}
-			if (ipv6.charAt(i) == "%".charAt(0) & System.getProperty("os.name").contains("Windows"))
+			if (ipv6.charAt(i) == "%".charAt(0) & windows | ipv6.charAt(i) == "%".charAt(0) & windows)
 				control = false;
 			if (ipv6.charAt(i) == ":".charAt(0) && !control)
 				control = true;
