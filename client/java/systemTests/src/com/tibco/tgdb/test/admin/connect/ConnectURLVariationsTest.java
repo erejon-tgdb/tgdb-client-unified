@@ -278,7 +278,7 @@ public class ConnectURLVariationsTest {
 	@Test(dataProvider = "wrongUrlData",
 		  groups = "default",
 		  description = "Try connecting TG Admin to TG Server via IPv4 with wrong url argument")
-	public void testWrongURLAttribute(String url) throws Exception {
+	public void testWrongURLArgument(String url) throws Exception {
 
 
 		File cmdFile = ClasspathResource.getResourceAsFile(
