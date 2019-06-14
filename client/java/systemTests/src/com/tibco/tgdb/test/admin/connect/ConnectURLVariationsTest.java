@@ -416,37 +416,13 @@ public class ConnectURLVariationsTest {
 	public void testIPv6ConnectWithDiffPort(String host, int port) throws Exception {
 
 		File cmdFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",tgWorkingDir + "/Connection.cmd");
-		String netInt = "";
-		String url;
-		port = 8225;
-//		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
-		
-		Enumeration<NetworkInterface> nets =  NetworkInterface.getNetworkInterfaces();
-		for (NetworkInterface nif : Collections.list(nets)) {
-			if(!nif.getDisplayName().contains("lo"))
-				netInt = "%" + nif.getDisplayName();
-			
-		}
-		
-		if(WINDOWS) {
-			 url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
-			 System.out.println(url);
-		}
-		else {
-			if(host.contains("0:0:0:0:0:0:0")){
-				url = (host.length()>11)?"tcp://[" + host.replace(":10", ":1%lo0") + ":" + port + "]": "tcp://" + host + ":" + port ;
-			} 
-			else {
-				url = (host.length()>11)?"tcp://[" + host + netInt + ":" + port + "]": "tcp://" + host + ":" + port ;
-			}
-			 System.out.println(url);
-		}
 		
 		// Start admin console and connect via IPv6
 
 		String console = "";
+		port= 8225;
 		
-		console = TGAdmin.invoke(tgServer.getHome().toString(),url, tgServer.getSystemUser(),tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", 
+		console = TGAdmin.invoke(tgServer.getHome().toString(),"tcp://[" + host + ":" + port + "]", tgServer.getSystemUser(),tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", 
 				null, cmdFile.getAbsolutePath(), -1,10000);
 		
 		Assert.assertTrue(console.contains(adminConnectSuccessMsg),"TG Admin connect!");
