@@ -278,7 +278,7 @@ public class ConnectURLVariationsTest {
 	@Test(dataProvider = "wrongUrlData",
 		  groups = "default",
 		  description = "Try connecting TG Admin to TG Server via IPv4 with wrong url argument")
-	public void testWrongUserPwd(String url) throws Exception {
+	public void testWrongURLAttribute(String url) throws Exception {
 
 
 		File cmdFile = ClasspathResource.getResourceAsFile(
@@ -346,7 +346,8 @@ public class ConnectURLVariationsTest {
 		else {
 			 url = (host.length()>11)?"tcp://[" + host + netInt + ":" + port + "]": "tcp://" + host + ":" + port ;
 		}
-
+		
+		url= (url.contains("172.16"))?url.replace("[","").replace("]", ""):url;
 //		System.out.println(url);
 		try {
 		console = TGAdmin.invoke(tgServer.getHome().toString(), url, tgServer.getSystemUser(),
@@ -566,11 +567,11 @@ public class ConnectURLVariationsTest {
 			//IPv6 - IPv6 default port on Windows
 			{"fe80::797e:c056:c735:5359","8223","true"},
 			//Ipv4 - IPv4 default port - On Mac
-			{"172.16.3.72","8222","true"},
+			{"172.16.3.133","8222","true"},
 			//IPv6 - IPv6 default port on Mac
-			{"fe80::1c5e:d7a2:daad:62c5","8223","true"},
+			{"fe80::b1:41c8:ac20:80ed","8223","true"},
 			//Ipv4 - IPv4 default port - On Linux
-			{"172.16.3.42","8222","true"},
+			{"172.16.3.111","8222","true"},
 			//IPv6 - IPv6 default port on Linux
 			{"fe80::47c:487:3811:9814","8223","true"},
 			//IPv6 - IPv4 port -  this one should not connect on Windows
@@ -578,11 +579,11 @@ public class ConnectURLVariationsTest {
 			////Ipv4 - IPv6 default port -  this one should not connect on Windows
 			{"172.16.1.14","8223","false"},
 			//Ipv4 - IPv6 default port -  this one should not connect On Mac
-			{"172.16.3.72","8223","false"},
+			{"172.16.3.133","8223","false"},
 			//IPv6 - IPv4 default port -  this one should not connect on Mac
-			{"fe80::1c5e:d7a2:daad:62c5","8222","false"},
-			//Ipv4 - IPv4 default port - On Linux this one can connect
-			{"172.16.3.42","8223","true"},
+			{"fe80::b1:41c8:ac20:80ed","8222","false"},
+				//Ipv4 - IPv4 default port - On Linux this one can connect
+			{"172.16.3.111","8223","true"},
 			//IPv6 - IPv6 default port - on Linux this one should not connect
 			{"fe80::47c:487:3811:9814","8222","false"}
 		};
