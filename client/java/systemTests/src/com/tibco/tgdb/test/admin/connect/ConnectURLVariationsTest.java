@@ -56,6 +56,7 @@ public class ConnectURLVariationsTest {
 	private static TGServer tgServer;
 	private static String tgHome = System.getProperty("TGDB_HOME");
 	private static String tgWorkingDir = System.getProperty("TGDB_WORKING", tgHome + "/test");
+	private static final boolean WINDOWS = (System.getProperty("os.name").contains("Windows"))?true:false;
 
 	final private String adminConnectSuccessMsg = "Successfully connected to server";
 
@@ -277,14 +278,14 @@ public class ConnectURLVariationsTest {
 	@Test(dataProvider = "wrongUrlData",
 		  groups = "default",
 		  description = "Try connecting TG Admin to TG Server via IPv4 with wrong url argument")
-	public void testWrongUserPwd(String url) throws Exception {
+	public void testWrongURLArgument(String url) throws Exception {
 
 
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
 		String netInt = "";
-		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
+//		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
 		
 		Enumeration<NetworkInterface> nets =  NetworkInterface.getNetworkInterfaces();
 		for (NetworkInterface nif : Collections.list(nets)) {
@@ -292,7 +293,7 @@ public class ConnectURLVariationsTest {
 				netInt = "%" + nif.getDisplayName();
 			
 		}
-		if(!windows && url.contains("fe80")) {
+		if(!WINDOWS && url.contains("fe80")) {
 			 url = url.replace(":8223", netInt + ":8223");
 		}
 		
@@ -319,14 +320,14 @@ public class ConnectURLVariationsTest {
 	 * @param port
 	 * @throws Exception
 	 */
-	@Test(dataProvider = "remoteServer",
+	@Test(dataProvider = "remoteServers",
 		  groups = "default",
 		  description = "connecting to a remote server by Ipv4 and IPv6")
-	public void connectRemoteServer(String host, String port) throws Exception {
+	public void connectRemoteServer(String host, String port,String connect) throws Exception {
 		String netInt = "";//store the network interface
 		String url; //store the url
-		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false; //Detecting if operating system is windows.
-		
+		boolean expectedPass = (connect.equalsIgnoreCase("true"))?true:false;
+//		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false; //Detecting if operating system is windows.
 		File cmdFile = ClasspathResource.getResourceAsFile(
 				this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",
 				tgWorkingDir + "/Connection.cmd");
@@ -334,33 +335,38 @@ public class ConnectURLVariationsTest {
 		Enumeration<NetworkInterface> nets =  NetworkInterface.getNetworkInterfaces();
 		for (NetworkInterface nif : Collections.list(nets)) {
 			if(!nif.getDisplayName().contains("lo"))
-				netInt = "%" + nif.getDisplayName();
-			
+				netInt = "%" + nif.getDisplayName();	
 		}
 		
 		String console = "";
 		// Creating the URL to connect to server, this depends from the operating system.
-		if(windows) {
-			 url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
-			 System.out.println(url);
+		if(WINDOWS) {
+			 url = (host.length()>15)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
 		}
 		else {
-			 url = (host.length()>11)?"tcp://[" + host + netInt + ":" + port + "]": "tcp://" + host + ":" + port ;
-			 System.out.println(url);
+			 url = (host.length()>15)?"tcp://[" + host + netInt + ":" + port + "]": "tcp://" + host + ":" + port ;
 		}
-
-//		System.out.println(url);
+		
+		//url= (url.contains("172.16"))?url.replace("[","").replace("]", ""):url;
+		
 		try {
 		console = TGAdmin.invoke(tgServer.getHome().toString(), url, tgServer.getSystemUser(),
 					tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1,
 					150000);
 		
-			if((!host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & !port.equalsIgnoreCase("8223")) | (!host.equalsIgnoreCase("172.16.1.14") & !port.equalsIgnoreCase("8222"))){
-				Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Expected successful message");
-			}
+//			if((!host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & !port.equalsIgnoreCase("8223")) | (!host.equalsIgnoreCase("172.16.1.14") & !port.equalsIgnoreCase("8222"))){
+//				Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Expected successful message");
+//			}
+		if(expectedPass==false) {
+			Assert.assertTrue(console.contains(adminConnectSuccessMsg), "Expected failure message");
+		}
+		
 		}catch(Exception e) {
-			if((host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & port.equalsIgnoreCase("8223")) | (host.equalsIgnoreCase("172.16.1.14") & port.equalsIgnoreCase("8222"))){
-				Assert.fail("Expected successful message");
+//			if((host.equalsIgnoreCase("fe80::797e:c056:c735:5359") & port.equalsIgnoreCase("8223")) | (host.equalsIgnoreCase("172.16.1.14") & port.equalsIgnoreCase("8222"))){
+//				Assert.fail("Expected successful message");
+//			}
+			if(expectedPass==true) {
+				Assert.fail("Expected successful message -> " + url);
 			}
 			System.out.println("Correct, this should not connect: -> " + url);
 			Assert.assertFalse(console.contains(adminConnectSuccessMsg), "TGAdmin - Admin could not connect to server tcp://" + host +"and " + port + "with user root");
@@ -410,37 +416,13 @@ public class ConnectURLVariationsTest {
 	public void testIPv6ConnectWithDiffPort(String host, int port) throws Exception {
 
 		File cmdFile = ClasspathResource.getResourceAsFile(this.getClass().getPackage().getName().replace('.', '/') + "/Connection.cmd",tgWorkingDir + "/Connection.cmd");
-		String netInt = "";
-		String url;
-		port = 8225;
-		boolean windows = (System.getProperty("os.name").contains("Windows"))? true:false;
-		
-		Enumeration<NetworkInterface> nets =  NetworkInterface.getNetworkInterfaces();
-		for (NetworkInterface nif : Collections.list(nets)) {
-			if(!nif.getDisplayName().contains("lo"))
-				netInt = "%" + nif.getDisplayName();
-			
-		}
-		
-		if(windows) {
-			 url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
-			 System.out.println(url);
-		}
-		else {
-			if(host.contains("0:0:0:0:0:0:0")){
-				url = (host.length()>11)?"tcp://[" + host.replace(":10", ":1%lo0") + ":" + port + "]": "tcp://" + host + ":" + port ;
-			} 
-			else {
-				url = (host.length()>11)?"tcp://[" + host + netInt + ":" + port + "]": "tcp://" + host + ":" + port ;
-			}
-			 System.out.println(url);
-		}
 		
 		// Start admin console and connect via IPv6
 
 		String console = "";
+		port= 8225;
 		
-		console = TGAdmin.invoke(tgServer.getHome().toString(),url, tgServer.getSystemUser(),tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", 
+		console = TGAdmin.invoke(tgServer.getHome().toString(),"tcp://[" + host + ":" + port + "]", tgServer.getSystemUser(),tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv4.log", 
 				null, cmdFile.getAbsolutePath(), -1,10000);
 		
 		Assert.assertTrue(console.contains(adminConnectSuccessMsg),"TG Admin connect!");
@@ -543,51 +525,6 @@ public class ConnectURLVariationsTest {
 		return (Object[][]) urlParams.toArray(new Object[urlParams.size()][2]);
 	}
 	
-	/**
-	 * Get all IPv6 addresses available on the current machine
-	 * @throws UnknownHostException 
-	 * @throws SocketException 
-	 */
-	@DataProvider(name = "ipv6Data_")
-	public Object[][] getIPv6_() throws UnknownHostException, SocketException {
-		int port = 8223; // get port of ipv6 listener
-		
-		List<Object[]> urlParams = new ArrayList<Object[]>();
-		System.setProperty("java.net.preferIPv6Addresses", "true");
-		
-		Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-		
-		for (NetworkInterface nif : Collections.list(nets)) {
-			if (nif == null) continue;
-			if (!nif.isUp()) continue;
-			if (nif.isPointToPoint()) continue;
-			if (nif.getName().startsWith("awdl")) continue;
-			
-			Enumeration<InetAddress> addrs = nif.getInetAddresses();
-			
-			while (addrs.hasMoreElements()) {
-				InetAddress address = addrs.nextElement(); 
-				if (address instanceof Inet6Address) {
-					//Sneha: Keeping the portion of IPV6 address after % sign as well,as testIPv6Connet test fails on MACOSX without it.
-					//This change needs to be tested on other Platforms.
-					String tmpAddr = address.getHostAddress();
-					urlParams.add(new Object[] {tmpAddr,port});
-				}
-			}
-		}
-		
-		return (Object[][])urlParams.toArray(new Object[urlParams.size()][2]);
-	}
-	
-	/**
-	 * Get several combinations of remote addresses
-	 */
-	@DataProvider(name = "remoteServer")
-	public Object[][] getUsers() throws IOException, EvalError {
-		Object[][] data =  PipedData.read(this.getClass().getResourceAsStream("/"+this.getClass().getPackage().getName().replace('.', '/') + "/remoteServer.data"));
-		return data;
-	}
-
 	
 	/**
 	 * Get several combinations of wrong urls for --url argument
@@ -596,6 +533,37 @@ public class ConnectURLVariationsTest {
 	public Object[] getUrls() throws IOException, EvalError {
 		Object[] data =  PipedData.read(this.getClass().getResourceAsStream("/"+this.getClass().getPackage().getName().replace('.', '/') + "/WrongUrls.data"));
 		return data;
+	}
+	
+	@DataProvider(name = "remoteServers")
+	public Object[][] getRemoteServer(){
+		return new Object[][] {
+			//Ipv4 - IPv4 default port - on Windows
+			{"172.16.1.14","8222","true"},
+			//IPv6 - IPv6 default port on Windows
+			{"fe80::797e:c056:c735:5359","8223","true"},
+			//Ipv4 - IPv4 default port - On Mac
+			{"172.16.3.133","8222","true"},
+			//IPv6 - IPv6 default port on Mac
+			{"fe80::c95:b1ac:f57e:1850","8223","true"},
+			//Ipv4 - IPv4 default port - On Linux
+			{"172.16.3.111","8222","true"},
+			//IPv6 - IPv6 default port on Linux
+			{"fe80::47c:487:3811:9814","8223","true"},
+			//IPv6 - IPv4 port -  this one should not connect on Windows
+			{"fe80::797e:c056:c735:5359","8222","false"},
+			////Ipv4 - IPv6 default port -  this one should not connect on Windows
+			{"172.16.1.14","8223","false"},
+			//Ipv4 - IPv6 default port -  this one should not connect On Mac
+			{"172.16.3.133","8223","false"},
+			//IPv6 - IPv4 default port -  this one should not connect on Mac
+			{"fe80::c95:b1ac:f57e:1850","8222","false"},
+				//Ipv4 - IPv4 default port - On Linux this one can connect
+			{"172.16.3.111","8223","true"},
+			//IPv6 - IPv6 default port - on Linux this one should not connect
+			{"fe80::47c:487:3811:9814","8222","false"}
+		};
+			
 	}
 	
 
@@ -609,11 +577,7 @@ public class ConnectURLVariationsTest {
 		boolean control = true;
 		String newIPv6 = "";
 		for (int i = 0; i < ipv6.length(); i++) {
-			if (ipv6.contains("%lo")) {
-				newIPv6 = ipv6.replace("%lo", "");
-				continue;
-			}
-			if (ipv6.charAt(i) == "%".charAt(0))
+			if (ipv6.charAt(i) == "%".charAt(0) & WINDOWS | ipv6.charAt(i) == "%".charAt(0) & WINDOWS)
 				control = false;
 			if (ipv6.charAt(i) == ":".charAt(0) && !control)
 				control = true;
