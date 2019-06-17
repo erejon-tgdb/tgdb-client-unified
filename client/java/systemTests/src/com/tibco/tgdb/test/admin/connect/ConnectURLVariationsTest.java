@@ -341,14 +341,14 @@ public class ConnectURLVariationsTest {
 		String console = "";
 		// Creating the URL to connect to server, this depends from the operating system.
 		if(WINDOWS) {
-			 url = (host.length()>11)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
+			 url = (host.length()>15)?"tcp://[" + host + ":" + port + "]": "tcp://" + host + ":" + port ;
 		}
 		else {
-			 url = (host.length()>11)?"tcp://[" + host + netInt + ":" + port + "]": "tcp://" + host + ":" + port ;
+			 url = (host.length()>15)?"tcp://[" + host + netInt + ":" + port + "]": "tcp://" + host + ":" + port ;
 		}
 		
 		url= (url.contains("172.16"))?url.replace("[","").replace("]", ""):url;
-//		System.out.println(url);
+		//System.out.println("LALALALALA " + url);
 		try {
 		console = TGAdmin.invoke(tgServer.getHome().toString(), url, tgServer.getSystemUser(),
 					tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1,
@@ -545,7 +545,7 @@ public class ConnectURLVariationsTest {
 			//Ipv4 - IPv4 default port - On Mac
 			{"172.16.3.133","8222","true"},
 			//IPv6 - IPv6 default port on Mac
-			{"fe80::b1:41c8:ac20:80ed","8223","true"},
+			{"fe80::c95:b1ac:f57e:1850","8223","true"},
 			//Ipv4 - IPv4 default port - On Linux
 			{"172.16.3.111","8222","true"},
 			//IPv6 - IPv6 default port on Linux
@@ -557,7 +557,7 @@ public class ConnectURLVariationsTest {
 			//Ipv4 - IPv6 default port -  this one should not connect On Mac
 			{"172.16.3.133","8223","false"},
 			//IPv6 - IPv4 default port -  this one should not connect on Mac
-			{"fe80::b1:41c8:ac20:80ed","8222","false"},
+			{"fe80::c95:b1ac:f57e:1850","8222","false"},
 				//Ipv4 - IPv4 default port - On Linux this one can connect
 			{"172.16.3.111","8223","true"},
 			//IPv6 - IPv6 default port - on Linux this one should not connect
