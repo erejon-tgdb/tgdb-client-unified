@@ -347,8 +347,8 @@ public class ConnectURLVariationsTest {
 			 url = (host.length()>15)?"tcp://[" + host + netInt + ":" + port + "]": "tcp://" + host + ":" + port ;
 		}
 		
-		url= (url.contains("172.16"))?url.replace("[","").replace("]", ""):url;
-		//System.out.println("LALALALALA " + url);
+		//url= (url.contains("172.16"))?url.replace("[","").replace("]", ""):url;
+		
 		try {
 		console = TGAdmin.invoke(tgServer.getHome().toString(), url, tgServer.getSystemUser(),
 					tgServer.getSystemPwd(), tgWorkingDir + "/admin.ipv6.log", null, cmdFile.getAbsolutePath(), -1,
