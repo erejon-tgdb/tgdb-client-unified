@@ -1,0 +1,315 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="RunAlltests">
+	
+	<test name="AdminAttributeTests">
+		<classes>
+			<class name="com.tibco.tgdb.test.admin.attribute.AttributeTests" />	
+		</classes>
+	</test>
+	<test name="AdminConnectionTests">
+	    <classes>
+	      <class name="com.tibco.tgdb.test.admin.connect.ConnectionTests"/>
+	      <class name="com.tibco.tgdb.test.admin.connect.ConnectURLVariationsTest"/>
+	    </classes>
+ 	</test> 
+ 	<test name="AdminEdgeTypeTests">
+		<classes>
+			<class name="com.tibco.tgdb.test.admin.attribute.AttributeTests" />	
+		</classes>
+	</test>
+	
+	<test name="AdminIndex">
+	    <classes>
+	      <class name="com.tibco.tgdb.test.admin.index.IndexTests"/>
+	    </classes>
+  	</test> <!-- Test -->
+  	
+  	 <test name="AdminNodeType">
+	    <classes>
+	      <class name="com.tibco.tgdb.test.admin.nodetype.NodeTypeTests"/>
+	    </classes>
+  	</test>
+  	
+  	<test name="AdminUsers">
+		<classes>
+			<class name="com.tibco.tgdb.test.admin.user.UserTests">
+			</class>
+		</classes>
+	</test>
+	
+	
+	<!-- Begins Connection test package-->
+	<test name="IPv4">
+		<classes>
+			<class name="com.tibco.tgdb.test.connect.ConnectionTests">
+				<methods>
+					<include name="testIPv4Connect"></include>
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="IPv6">
+		<classes>
+			<class name="com.tibco.tgdb.test.connect.ConnectionTests">
+				<methods>
+					<include name="testIPv6Connect"></include>
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="Auth">
+		<classes>
+			<class name="com.tibco.tgdb.test.connect.ConnectionTests">
+				<methods>
+					<include name="testAuthConnect"></include>
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="MaxConnections">
+		<classes>
+			<class name="com.tibco.tgdb.test.connect.ConnectionTests">
+				<methods>
+					<include name="testMaxConnectWithNoPool"></include>
+					<include name="testMaxConnectWithPool"></include>
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="MassConnections">
+		<classes>
+			<class name="com.tibco.tgdb.test.connect.ConnectionTests">
+				<methods>
+					<include name="testMassConnectWithNoPool"></include>
+					<include name="testMassConnectWithPool"></include>
+					<include name="testMassConnectWithPool2"></include>
+					<include name="testMassConnectWithPool3"></include>
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="ConnectionPool">
+		<classes>
+			<class name="com.tibco.tgdb.test.connect.ConnectionTests">
+				<methods>
+					<include name="testConnectionPool"></include>
+					<include name="testConnectionPool2"></include>
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<!-- Ends Connection test package -->
+	
+	<!-- Starts datatype.attriute tests -->
+	<test name="DatatypeBooleanAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.BooleanAttrTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeByteAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.ByteAttrTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeCharAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.CharAttrTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeDateAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.DateAttrTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeDoubleAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.DoubleAttrTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeFloatAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.FloatAttrTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeIntegerAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.IntegerAttrTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeLongAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.LongAttrTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeNumberAttrAttribute">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.NumberAttrTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeShortAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.ShortAttrTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeStringAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.StringAttrTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeTimeAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.TimeAttrTests"/>
+    </classes>
+  </test><test name="DatatypeTimestampAttr">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.attribute.TimestampAttrTests"/>
+    </classes>
+  </test>
+	<!-- Ends .datatype.attribute tests -->
+	
+	<!-- starts datatype.index tests  -->
+	<test name="DatatypeBooleanIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.BooleanIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeByteIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.ByteIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeCharIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.CharIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeDateIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.DateIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeDoubleIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.DoubleIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeFloatIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.FloatIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeIntegerIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.IntIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeLongIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.LongIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeNumberIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.NumberIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeShortIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.ShortIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeStringIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.StringIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeTimeIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.TimeIndexTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeTimestampIndex">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.index.TimestampIndexTests"/>
+    </classes>
+  </test>
+	<!-- Ends datatype.index tests -->
+	
+	<!-- Starts datatype.pkey tests -->
+	<test name="DatatypeBooleanPKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.BooleanPKeyTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeBytePKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.BytePKeyTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeCharPKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.CharPKeyTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeDatePKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.DatePKeyTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeDoublePKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.DoublePKeyTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeFloatPKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.FloatPKeyTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeIntegerPKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.IntPKeyTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeLongPKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.LongPKeyTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeNumberAttrPKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.NumberPKeyTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeShortPKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.ShortPKeyTests"/>
+    </classes>
+  </test>
+  <test name="DatatypeStringPKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.StringPKeyTests"/>
+    </classes>
+  </test>
+  <!-- 
+  <test name="DatatypeTimePKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.TimePKeyTests"/>
+    </classes>
+  </test>
+ -->
+  <test name="DatatypeTimestampPKey">
+    <classes>
+      <class name="com.tibco.tgdb.test.datatype.pkey.TimestampPKeyTests"/>
+    </classes>
+  </test>
+	<!-- Ends datatype.pkey tests -->
+	
+	<test name="TestEntity">
+		<classes>
+			<class name="com.tibco.tgdb.test.entity.EdgeTests"/>
+			<class name="com.tibco.tgdb.test.entity.NodeTests"/>
+		</classes>
+	</test>
+
+</suite>
